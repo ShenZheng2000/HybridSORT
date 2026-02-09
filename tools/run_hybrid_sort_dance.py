@@ -106,6 +106,10 @@ def main(exp, args, num_gpu):
             ckpt_file = os.path.join(file_name, "best_ckpt.pth.tar")
         else:
             ckpt_file = args.ckpt
+        
+        logger.info(f"[DEBUG] Final ckpt_file = {ckpt_file}")
+        # exit()
+
         logger.info("loading checkpoint")
         loc = "cuda:{}".format(rank)
         ckpt = torch.load(ckpt_file, map_location=loc)
@@ -197,9 +201,14 @@ def main(exp, args, num_gpu):
 
 if __name__ == "__main__":
     args = make_parser().parse_args()
+    user_ckpt = args.ckpt            # <<< ADD
+
     exp = get_exp(args.exp_file, args.name)
     exp.merge(args.opts)
     args_merge_params_form_exp(args, exp)
+
+    if user_ckpt is not None:
+        args.ckpt = user_ckpt            # <<< ADD
 
     if not args.expn:
         args.expn = exp.exp_name

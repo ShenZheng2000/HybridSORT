@@ -337,10 +337,15 @@ class Hybrid_Sort(object):
         ret = []
         for t, trk in enumerate(trks):
             pos, kalman_score, simple_score = self.trackers[t].predict()
-            try:
-                trk[:] = [pos[0][0], pos[0][1], pos[0][2], pos[0][3], kalman_score, simple_score[0]]
-            except:
-                trk[:] = [pos[0][0], pos[0][1], pos[0][2], pos[0][3], kalman_score, simple_score]
+
+            # try:
+            #     trk[:] = [pos[0][0], pos[0][1], pos[0][2], pos[0][3], kalman_score[0], simple_score[0]]
+            # except:
+            #     trk[:] = [pos[0][0], pos[0][1], pos[0][2], pos[0][3], kalman_score, simple_score]
+            trk[:] = [pos[0][0], pos[0][1], pos[0][2], pos[0][3],
+                    (kalman_score[0] if hasattr(kalman_score,"__len__") else kalman_score),
+                    (simple_score[0] if hasattr(simple_score,"__len__") else simple_score)]
+
             if np.any(np.isnan(pos)):
                 to_del.append(t)
         trks = np.ma.compress_rows(np.ma.masked_invalid(trks))
